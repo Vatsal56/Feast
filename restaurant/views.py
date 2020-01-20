@@ -2,7 +2,7 @@ from django.shortcuts import render
 from restaurant.forms import UserForm
 
 
-from restaurant.models import food_item, drink_item
+from restaurant.models import food_item, drink_item, table
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -60,9 +60,31 @@ def user_login(request):
         return render(request,'restaurant/login.html',{})
 
 def order(request):
-
-    return render(request,'restaurant/order.html',{"food_items":food_item.objects.all(),"drink_items":drink_item.objects.all()})
-
+    if request.method == "GET":
+        return render(request,'restaurant/order.html',{"food_items":food_item.objects.all(),"drink_items":drink_item.objects.all(),"seats_2":table.objects.filter(seats=2),"seats_4":table.objects.filter(seats=4),"seats_10":table.objects.filter(seats=10)})
+    elif request.method == "POST":
+        Pizza_qty = int(request.POST["Pizza_qnty"])
+        Burger_qty = int(request.POST["Burger_qnty"])
+        Noodles_qty = int(request.POST["Noodles_qnty"])
+        Coffee_qty = int(request.POST["Coffee_qnty"])
+        Tea_qty = int(request.POST["Tea_qnty"])
+        Juice_qty = int(request.POST["Juice_qnty"])
+        Pizza_price = int(food_item.objects.filter(name="Pizza")[0].price)
+        Burger_price = int(food_item.objects.filter(name="Burger")[0].price)
+        Noodles_price = int(food_item.objects.filter(name="Noodles")[0].price)
+        Coffee_price = int(drink_item.objects.filter(name="Coffee")[0].price)
+        Tea_price = int(drink_item.objects.filter(name="Tea")[0].price)
+        Juice_price = int(drink_item.objects.filter(name="Juice")[0].price)
+        total_bill = (Pizza_qty*Pizza_price) + (Burger_qty*Burger_price) + (Noodles_qty*Noodles_price) + (Coffee_qty*Coffee_price) + (Tea_qty*Tea_price) + (Juice_qty*Juice_price)
+        table_num = request.POST["table_number"]
+        tbl = table.objects.filter(table_num=table_num)[0]
+        if tbl.is_occupied == False:
+            print("success")
+            tbl.is_occupied = True
+            tbl.save()
+            return render(request,'restaurant/order.html',{"food_items":food_item.objects.all(),"drink_items":drink_item.objects.all(),"seats_2":table.objects.filter(seats=2),"seats_4":table.objects.filter(seats=4),"seats_10":table.objects.filter(seats=10)})
+        else:
+            return render(request,'restaurant/order.html',{"food_items":food_item.objects.all(),"drink_items":drink_item.objects.all(),"seats_2":table.objects.filter(seats=2),"seats_4":table.objects.filter(seats=4),"seats_10":table.objects.filter(seats=10)})
 
 
 

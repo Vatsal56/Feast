@@ -15,13 +15,13 @@
         <p class="q">1.</p>
     </div>
     <div class="col-md-3 col-xs-3">
-      <a href="#"><button type="button" onclick="increment()" class="btn btn-default btn-lg btnstyle col-md-4 btn-primary" name="{{ item.name }}">{{ item.name }}</button></a>
+      <button type="button" onclick="increment('{{ item.name }}_qty')" class="btn btn-default btn-lg btnstyle btn-primary" name="{{ item.name }}">{{ item.name }}</button>
     </div>
     <div class="col-md-2 col-xs-2">
       <label class="labels" for="{{ item.name }}">${{item.price}}</label>
     </div>
     <div class="col-md-6 col-xs-6">
-      <p class="q">Quantity you've ordered: <span>{{ pizzaquantity }}</span></p>
+      <p class="q">Quantity you've ordered: <span class="zero" id="{{ item.name }}_qty">0</span></p>
     </div>
   </div>
   {% endfor %}
@@ -36,18 +36,23 @@
       <p class="q">1.</p>
     </div>
     <div class="col-md-3 col-xs-3">
-      <a href="#"><button type="button" class="btn btn-default btn-lg btnstyle col-md-4 btn-primary" name="{{ item.name }}">{{ item.name }}</button></a>
+      <button type="button" onclick="increment('{{ item.name }}_qty')" class="btn btn-default btn-lg btnstyle btn-primary" name="{{ item.name }}">{{ item.name }}</button>
     </div>
     <div class="col-md-2 col-xs-2">
       <label class="labels" for="{{ item.name }}">${{ item.price }}</label>
     </div>
     <div class="col-md-6 col-xs-6">
-      <p class="q">Quantity you've ordered: <span>{{ coffeequantity }}</span></p>
+      <p class="q">Quantity you've ordered: <span class="zero" id="{{ item.name }}_qty">0</span></p>
     </div>
   </div>
   {% endfor %}
 
   <br><br>
+
+  <!-- RESET BUTTON -->
+  <button type="button" onclick="zero()" class="btn btn-default btn-lg btn-primary btn-block col-md-12 " name="reset">RESET</button>
+
+  <br><br><br><br>
 
   <!-- TABLES -->
 
@@ -61,18 +66,42 @@
     </thead>
     <tr>
       <td>2 Seater</td>
-      <td>4 Tables</td>
-      <td>3 | 5 | 7 | 9</td>
+      <td>{{ seats_2|length }}</td>
+      <td>
+        | {% for table in seats_2 %}
+            {% if table.is_occupied %}
+              <span style="color:red;">{{ table.table_num }} </span>|
+            {% else %}
+              <span style="color:#5cb85c;">{{ table.table_num }} </span>|
+            {% endif %}
+          {% endfor %}
+      </td>
     </tr>
     <tr>
       <td>4 Seater</td>
-      <td>3 Tables</td>
-      <td>4 | 6 | 8</td>
+      <td>{{ seats_4|length }}</td>
+      <td>
+        | {% for table in seats_4 %}
+            {% if table.is_occupied %}
+              <span style="color:red;">{{ table.table_num }} </span>|
+            {% else %}
+              <span style="color:#5cb85c;">{{ table.table_num }} </span>|
+            {% endif %}
+          {% endfor %}
+      </td>
     </tr>
     <tr>
       <td>10 Seater</td>
-      <td>2 Tables</td>
-      <td>1 | 2</td>
+      <td>{{ seats_10|length }}</td>
+      <td>
+        | {% for table in seats_10 %}
+            {% if table.is_occupied %}
+              <span style="color:red;">{{ table.table_num }} </span>|
+            {% else %}
+              <span style="color:#5cb85c;">{{ table.table_num }} </span>|
+            {% endif %}
+          {% endfor %}
+      </td>
     </tr>
   </table>
 
@@ -80,7 +109,7 @@
 
   <div class="form-group">
     <label for="tablenum" class="labels">Is there any specific table you'd like?</label><br>
-    <input type="number" name="tablenum" class="form-control" placeholder="1-9" max="9" min="1">
+    <input id="input_table_num" type="number" name="tablenum" class="form-control" placeholder="1-9" max="9" min="1">
   </div>
 
   <br><br>
@@ -88,10 +117,51 @@
   <!-- PLACE ORDER -->
 
   <div class="form-group">
-    <input type="submit" class="btn btn-default btn-lg btn-success btn-block" name="placeorder" value="Place Order">
+    <input onclick="submit_form()" class="btn btn-default btn-lg btn-success btn-block" name="placeorder" value="Place Order">
   </div>
+
+  <form type="hidden"id="main" action="{% url 'order' %}" method="POST">
+    {% csrf_token %}
+    {% for itm in food_items %}
+    <input type="hidden" name="{{ itm.name }}_qnty" id="{{ itm.name }}_qnty" value="">
+    {% endfor %}
+    {% for itm in drink_items %}
+    <input type="hidden" name="{{ itm.name }}_qnty" id="{{ itm.name }}_qnty" value="">
+    {% endfor %}
+    <input type="hidden" name="table_number" id="table_number" value="">
+  </form>
 
 
 
   <br><br><br><br><br><br>
+  <script
+    src="https://code.jquery.com/jquery-3.4.1.js"
+    integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+    crossorigin="anonymous"></script>
+  <script type="text/javascript">
+    function increment(id_name){
+      span = document.getElementById(id_name)
+      current = parseInt(span.textContent)
+      span.textContent = current + 1
+    }
+
+    function zero() {
+      all_qty = document.getElementsByClassName('zero')
+      for (var i = 0; i < all_qty.length; i++) {
+        all_qty[i].textContent = "0"
+      }
+    }
+    function submit_form() {
+      document.getElementById('Pizza_qnty').value = document.getElementById('Pizza_qty').textContent
+      document.getElementById('Burger_qnty').value = document.getElementById('Burger_qty').textContent
+      document.getElementById('Noodles_qnty').value = document.getElementById('Noodles_qty').textContent
+      document.getElementById('Coffee_qnty').value = document.getElementById('Coffee_qty').textContent
+      document.getElementById('Tea_qnty').value = document.getElementById('Tea_qty').textContent
+      document.getElementById('Juice_qnty').value = document.getElementById('Juice_qty').textContent
+      document.getElementById('table_number').value = document.getElementById('input_table_num').value
+      document.getElementById('main').submit()
+
+    }
+
+  </script>
 {% endblock %}

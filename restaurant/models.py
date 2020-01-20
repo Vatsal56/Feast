@@ -15,3 +15,8 @@ class drink_item(models.Model):
 
     def __str__(self):
         return self.name
+
+class table(models.Model):
+    table_num = models.IntegerField(default=0)
+    is_occupied = models.BooleanField(default=False)
+    seats = models.IntegerField(default=0)
