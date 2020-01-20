@@ -23,5 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^register/',views.register,name='register'),
     url(r'^user_login/',views.user_login,name='user_login'),
-    url(r'^logout/',views.user_logout,name="logout")
+    url(r'^logout/',views.user_logout,name="logout"),
+    url(r'^order/',views.order,name='order'),
 ]

@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from restaurant.forms import UserForm
 
-#
+
+from restaurant.models import food_item, drink_item
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -57,3 +58,23 @@ def user_login(request):
             return HttpResponse("Invalid Login Details Supllied")
     else:
         return render(request,'restaurant/login.html',{})
+
+def order(request):
+
+    return render(request,'restaurant/order.html',{"food_items":food_item.objects.all(),"drink_items":drink_item.objects.all()})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# --------------
