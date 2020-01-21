@@ -20,3 +20,13 @@ class table(models.Model):
     table_num = models.IntegerField(default=0)
     is_occupied = models.BooleanField(default=False)
     seats = models.IntegerField(default=0)
+
+class Order(models.Model):
+    Pizza_qty = models.IntegerField(default=0)
+    Burger_qty = models.IntegerField(default=0)
+    Noodles_qty = models.IntegerField(default=0)
+    Coffee_qty = models.IntegerField(default=0)
+    Tea_qty = models.IntegerField(default=0)
+    Juice_qty = models.IntegerField(default=0)
+    Table_num = models.IntegerField(default=0)
+    total_bill = models.IntegerField(default=0)

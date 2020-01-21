@@ -12,14 +12,18 @@
     <nav class="navbar navbar-default navbar-static-top">
       <div class="container">
         <ul class="nav navbar-nav">
-          <li><a class="navbar-brand" href="{% url 'index' %}">FEAST</a></li>
-          <li><a class="navbar-link" href="{% url 'register' %}">Sign Up</a></li>
+          {% if user.is_authenticated %}
+            <li><a class="navbar-brand" href="{% url 'index' %}">Welcome</a></li>
+          {% else %}
+            <li><a class="navbar-brand" href="{% url 'index' %}">FEAST</a></li>
+          {% endif %}
 
 
           {% if user.is_authenticated %}
             <li><a class="navbar-link" href="{% url 'logout' %}">Log Out</a></li>
             <li><a class="navbar-link" href="{% url 'order' %}">Order</a></li>
           {% else %}
+            <li><a class="navbar-link" href="{% url 'register' %}">Sign Up</a></li>
             <li><a class="navbar-link" href="{% url 'user_login' %}">Log In</a></li>
           {% endif %}
 

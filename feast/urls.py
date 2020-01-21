@@ -25,4 +25,5 @@ urlpatterns = [
     url(r'^user_login/',views.user_login,name='user_login'),
     url(r'^logout/',views.user_logout,name="logout"),
     url(r'^order/',views.order,name='order'),
+    path(r'^bill/<int:orderId>',views.bill,name='bill'),
 ]

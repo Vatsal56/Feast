@@ -1,8 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from restaurant.forms import UserForm
 
 
-from restaurant.models import food_item, drink_item, table
+from restaurant.models import User,food_item, drink_item, table, Order
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -49,7 +49,8 @@ def user_login(request):
         if user:
             if user.is_active:
                 login(request,user)
-                return HttpResponseRedirect(reverse('index'))
+                return render(request,'restaurant/index.html',{'username':username})
+                # return HttpResponseRedirect(reverse('index'))
             else:
                 return HttpResponse("ACCOUNT NOT ACTIVE")
         else:
@@ -82,13 +83,16 @@ def order(request):
             print("success")
             tbl.is_occupied = True
             tbl.save()
-            return render(request,'restaurant/order.html',{"food_items":food_item.objects.all(),"drink_items":drink_item.objects.all(),"seats_2":table.objects.filter(seats=2),"seats_4":table.objects.filter(seats=4),"seats_10":table.objects.filter(seats=10)})
+            billy = Order(Table_num=table_num,Pizza_qty=Pizza_qty,Burger_qty=Burger_qty,Noodles_qty=Noodles_qty,Coffee_qty=Coffee_qty,Tea_qty=Tea_qty,Juice_qty=Juice_qty,total_bill=total_bill)
+            billy.save()
+            return redirect('bill',billy.id)
         else:
             return render(request,'restaurant/order.html',{"food_items":food_item.objects.all(),"drink_items":drink_item.objects.all(),"seats_2":table.objects.filter(seats=2),"seats_4":table.objects.filter(seats=4),"seats_10":table.objects.filter(seats=10)})
 
 
 
-
+def bill(request,orderId):
+    return render(request,"restaurant/bill.html")
 
 
 
